@@ -1,8 +1,8 @@
 import React from "react";
 
-import Web3 from "web3";
-import Web3Modal from "web3modal";
-import Portis from "@portis/web3";
+//import Web3 from "web3";
+//import Web3Modal from "web3modal";
+//import Portis from "@portis/web3";
 
 
 export default function App(props) {
@@ -19,7 +19,7 @@ export default function App(props) {
             </button>
           </div>
 
-          <div id="connected" style="display:none">
+          <div id="connected">
             <button class="btn btn-primary" id="btn-disconnect">
               Disconnect Wallet
             </button>
