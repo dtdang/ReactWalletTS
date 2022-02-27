@@ -3,11 +3,11 @@ import { ethers } from "ethers";
 import './App.css';
 import Web3Modal from "web3modal";
 import Portis from "@portis/web3";
-import WalletConnectProvider from "@walletconnect/web3-provider";
+import WalletConnectClient from "@walletconnect/client";
 
 const providerOptions = {
   walletconnect: {
-    package: WalletConnectProvider, // required
+    package: WalletConnectClient, // required
     options: {
       infuraId: "a83e54cc8ffd4887a0b8055d6130e765" // required
     }
