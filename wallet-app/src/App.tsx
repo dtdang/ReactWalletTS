@@ -3,11 +3,11 @@ import { ethers } from "ethers";
 import './App.css';
 import Web3Modal from "web3modal";
 import Portis from "@portis/web3";
-import WalletConnectProvider from "@walletconnect/web3-provider";
+import WalletConnectClient  from "@walletconnect/client";
 
 const providerOptions = {
   walletconnect: {
-    package: WalletConnectProvider, // required
+    package: WalletConnectClient , // required
     options: {
       infuraId: "a83e54cc8ffd4887a0b8055d6130e765" // required
     }
@@ -71,14 +71,9 @@ function App() {
     });
   }
 
-  async function signMessage() {
-    const signedMessage = await account.signer.signMessage("Please Login to our website!");
-    console.log(signedMessage);
-  }
-
   if(!account.connected) {
     return (
-      <div className="container">
+      <div className="App">
         <div className="col-md-12">
           <h1>Web3Modal</h1>
           <p>No wallet connected. Connect wallet to show account address and ETH balance.</p>
@@ -91,7 +86,7 @@ function App() {
   }
   else {
     return (
-      <div className="container">
+      <div className="App">
         <div className="col-md-12">
           <h1>Web3Modal</h1>
           <table className="table table-listing">
@@ -110,52 +105,6 @@ function App() {
       </div>
     )
   }
-
-
-  /*
-  return (
-    <div className="container">
-      <div className="row">
-        <div className="col-md-12">
-          <h1>Web3modal</h1>
-          <p>No wallet connected. Connect wallet to show accounts and their ETH balances.</p>
-
-          <div id="prepare">
-            <button className="btn btn-primary" onClick={connect}>
-              Connect Wallet
-            </button>
-          </div>
-
-          <div id="connected">
-            <button className="btn btn-primary">
-              Disconnect Wallet
-            </button>
-          </div>
-
-          <hr></hr>
-
-          <div id="network">
-            <p>Connected Blockchain: <span id="network-name"></span></p>
-            <p>Selected Account: <span id="selected-account"></span></p>
-          </div>
-
-          <hr></hr>
-
-          <h3> All Account balances</h3>
-
-          <table className="table table-listing">
-            <thead>
-              <th>Address</th>
-              <th>ETH Balance</th>
-            </thead>
-
-            <tbody id="accounts"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  );
-  */
 
 }
 
