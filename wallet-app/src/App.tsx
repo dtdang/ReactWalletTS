@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import { ethers } from "ethers";
 import './App.css';
-import Web3 from "web3";
 import Web3Modal from "web3modal";
 import Portis from "@portis/web3";
 import WalletConnectProvider from "@walletconnect/web3-provider";
@@ -21,48 +21,79 @@ const providerOptions = {
 };
 
 const web3Modal = new Web3Modal({
-  cacheProvider: false,
-  providerOptions, //required
-  disableInjectedProvider: false
+  network: "mainnet", // optional
+  cacheProvider: false, // optional
+  providerOptions // required
 });
 
-interface InitialState {
-  address: string,
-  web3: any,
+interface Accounts {
+  connected: boolean,
   provider: any,
-  chainId: number,
-  networkId: number,
-  connected: boolean
+  address: string,
+  signer: any,
+  balance: any,
 }
 
-function App(){
-  const [web3, setWeb3] = useState(null)
-  const [accounts, setAccounts] = useState(null)
-  const [chainId, setChainId] = useState(1)
-  const [networkId, setNetworkId] = useState(1)
-  const [account, setAccount] = useState(null)
-  const [provider, setProvider] = useState(null)
+const InitialState: Accounts = {
+  connected: false,
+  provider: null,
+  address: "",
+  signer: null,
+  balance: 0
+};
 
+function App() {
+  const [account, setAccount] = useState(InitialState);
+  
+  async function connect() {
+    const web3ModalProvider = await web3Modal.connect();
 
+    const provider = new ethers.providers.Web3Provider(web3ModalProvider);
 
-  componentDidMount() {
-    if (web3Modal.cachedProvider){
-      web3Connect();
+    async function setAccountFromProvider() {
+      const signer = await provider.getSigner(0);
+      const address = await signer.getAddress();
+      const balance = await signer.getBalance();
+
+      setAccount({
+        connected: true,
+        provider,
+        address,
+        signer,
+        balance: ethers.utils.formatEther(balance)
+      });
     }
+
+    setAccountFromProvider();
+
+    web3ModalProvider.on("accountsChanged", () => {
+      setAccountFromProvider();
+    });
   }
 
-  web3Connect = async () => {
-    const provider = await web3Modal.connect();
-    await provider.enable();
+  async function signMessage() {
+    const signedMessage = await account.signer.signMessage("Please Login to our website!");
+    console.log(signedMessage);
+  }
 
-    const accounts = await web3.eth.getAccounts();
+  if(!account.connected) {
+    return (
+      <div className="button" onClick={connect}>
+        Connect to Web3!
+      </div>
+    )
+  }
+  else {
+    return (
+      <div className="account">
+        Address               Balance
+        { account.address } { account.balance }
+      </div>
+    )
+  }
 
-    const address = accounts[0];
 
-    const chainId = await web3.eth.chainId();
-
-    const networkId = await web3.eth.net.getId();
-  } 
+  /*
   return (
     <div className="container">
       <div className="row">
@@ -71,13 +102,13 @@ function App(){
           <p>No wallet connected. Connect wallet to show accounts and their ETH balances.</p>
 
           <div id="prepare">
-            <button className="btn btn-primary" id="btn-connect" onClick={() => showPrepare()}>
+            <button className="btn btn-primary" onClick={connect}>
               Connect Wallet
             </button>
           </div>
 
           <div id="connected">
-            <button className="btn btn-primary" id="btn-disconnect">
+            <button className="btn btn-primary">
               Disconnect Wallet
             </button>
           </div>
@@ -105,6 +136,8 @@ function App(){
       </div>
     </div>
   );
+  */
+
 }
 
 export default App;
