@@ -8,6 +8,10 @@ Project Requirements
 - once the wallet is connected it should show the wallet address connected and the Eth balance. 
 - we should be able to connect to different networks, rinkeby and mainnet.
 
+### `npm install`
+
+Install dependencies needed for wallet to connect. 
+
 ### `npm start`
 
 Runs the app in the development mode.\
