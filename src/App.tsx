@@ -3,11 +3,15 @@ import { ethers } from "ethers";
 import './App.css';
 import Web3Modal from "web3modal";
 import Portis from "@portis/web3";
-import WalletConnectClient  from "@walletconnect/client";
+import WalletConnectProvider from "@walletconnect/web3-provider";
+// import WalletConnectClient  from "@walletconnect/client";
+// import { CLIENT_EVENTS } from "@walletconnect/client";
+// import { PairingTypes, SessionTypes } from "@walletconnect/types";
+
 
 const providerOptions = {
   walletconnect: {
-    package: WalletConnectClient , // required
+    package: WalletConnectProvider , // required
     options: {
       infuraId: "a83e54cc8ffd4887a0b8055d6130e765" // required
     }
@@ -32,6 +36,7 @@ interface Accounts {
   address: string,
   signer: any,
   balance: any,
+  // uri: any,
 }
 
 const InitialState: Accounts = {
@@ -39,18 +44,22 @@ const InitialState: Accounts = {
   provider: null,
   address: "",
   signer: null,
-  balance: 0
+  balance: 0,
+  // uri: "",
 };
 
 function App() {
+  //set Account state to initial values
   const [account, setAccount] = useState(InitialState);
   
   async function connect() {
     const web3ModalProvider = await web3Modal.connect();
 
+    //Provides connection to eth network
     const provider = new ethers.providers.Web3Provider(web3ModalProvider);
 
     async function setAccountFromProvider() {
+      //signer- access to private key and authorize network transactions
       const signer = await provider.getSigner(0);
       const address = await signer.getAddress();
       const balance = await signer.getBalance();
@@ -60,10 +69,50 @@ function App() {
         provider,
         address,
         signer,
-        balance: ethers.utils.formatEther(balance)
+        //format output to something user-friendly
+        balance: ethers.utils.formatEther(balance),
+        // uri,
       });
     }
 
+    // const client = await WalletConnectClient.init({
+    //   projectId: "055734db83719a3a7eece1d09bc55e1e",
+    //   relayUrl: "wss://relay.walletconnect.com",
+    //   metadata: {
+    //     name: "Example Dapp",
+    //     description: "Example Dapp",
+    //     url: "#",
+    //     icons: ["https://walletconnect.com/walletconnect-logo.png"],
+    //   },
+    // });
+    
+    
+    // client.on(
+    //   CLIENT_EVENTS.pairing.proposal,
+    //   async (proposal: PairingTypes.Proposal) => {
+    //     // uri should be shared with the Wallet either through QR Code scanning or mobile deep linking
+    //     const { uri } = proposal.signal.params;
+    //   }
+    // );
+    
+    // client.on(
+    //   CLIENT_EVENTS.session.created,
+    //   async (session: SessionTypes.Created) => {
+    //     // session created succesfully
+    //   }
+    // );
+    
+    // const session = await client.connect({
+    //   permissions: {
+    //     blockchain: {
+    //       chains: ["eip155:1"],
+    //     },
+    //     jsonrpc: {
+    //       methods: ["eth_sendTransaction", "personal_sign", "eth_signTypedData"],
+    //     },
+    //   },
+    // });
+    
     setAccountFromProvider();
 
     web3ModalProvider.on("accountsChanged", () => {
@@ -80,6 +129,9 @@ function App() {
           <button className="btn btn-primary" onClick={connect}>
             Connect to Web3!
           </button>
+          {/* <button className="btn" onClick={session}>
+            WalletConnectV2
+          </button> */}
         </div>
       </div>
     )
